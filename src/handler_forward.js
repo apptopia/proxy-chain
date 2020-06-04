@@ -1,4 +1,5 @@
 import http from 'http';
+import net from 'net';
 import { isHopByHopHeader, isInvalidHeader, addHeader, maybeAddProxyAuthorizationHeader } from './tools';
 import HandlerBase from './handler_base';
 
@@ -9,7 +10,7 @@ import HandlerBase from './handler_base';
 export default class HandlerForward extends HandlerBase {
     constructor(options) {
         super(options);
-
+        this.localAddress = options.localAddress;
         this.bindHandlersToThis(['onTrgResponse', 'onTrgError']);
     }
 
@@ -99,6 +100,10 @@ export default class HandlerForward extends HandlerBase {
         }
 
         // console.dir(requestOptions);
+
+        if (this.localAddress && net.isIP(this.localAddress)) {
+            reqOpts.localAddress = this.localAddress;
+        }
 
         this.trgRequest = http.request(reqOpts);
         this.trgRequest.on('response', this.onTrgResponse);

@@ -303,6 +303,10 @@ export class Server extends EventEmitter {
                     }
                 }
 
+                if (funcResult && funcResult.localAddress) {
+                    handlerOpts.localAddress = funcResult.localAddress;
+                }
+
                 if (funcResult && funcResult.customResponseFunction) {
                     this.log(handlerOpts.id, 'Using custom response function');
                     handlerOpts.customResponseFunction = funcResult.customResponseFunction;

@@ -163,7 +163,7 @@ export default class HandlerBase extends EventEmitter {
      */
     checkUpstreamProxy407(response) {
         if (this.upstreamProxyUrlParsed && response.statusCode === 407) {
-            this.fail(new RequestError('Invalid credentials provided for the upstream proxy.', 502));
+            this.fail(new RequestError('Invalid credentials provided for the upstream proxy.', 407));
             return true;
         }
         return false;
@@ -202,7 +202,18 @@ export default class HandlerBase extends EventEmitter {
             this.log('Socket closed before write, sending 502 to client');
             this.srcResponse.writeHead(502);
             this.srcResponse.end('Connection interrupted');
-        } else {
+        } else if (err.code === 'EHOSTUNREACH') {
+            this.log('Host unreachable');
+            this.srcResponse.writeHead(502);
+            this.srcResponse.end('Host unreachable');
+            this.srcGotResponse = true;
+        } else if (err.code === 'EADDRNOTAVAIL') {
+            this.log('Address not available');
+            this.srcResponse.writeHead(502);
+            this.srcResponse.end('Address not available ');
+            this.srcGotResponse = true;
+        }
+        else {
             this.log('Unknown error, sending 500 to client');
             this.srcResponse.writeHead(500);
             this.srcResponse.end('Internal error in proxy server');

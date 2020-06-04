@@ -156,7 +156,7 @@ export default class HandlerTunnelTcpChain {
      */
     checkUpstreamProxy407(response) {
         if (this.upstreamProxyUrlParsed && response.statusCode === 407) {
-            this.fail('Invalid credentials provided for the upstream proxy.', 502);
+            this.fail('Invalid credentials provided for the upstream proxy.', 407);
             return true;
         }
         return false;
