@@ -7,14 +7,14 @@ import HandlerBase from './handler_base';
 export default class HandlerTunnelDirect extends HandlerBase {
     constructor(options) {
         super(options);
-
+        this.localAddress = options.localAddress;
         this.bindHandlersToThis(['onTrgSocketConnect']);
     }
 
     run() {
         this.log(`Connecting to target ${this.trgParsed.hostname}:${this.trgParsed.port}`);
 
-        const socket = net.createConnection(this.trgParsed.port, this.trgParsed.hostname);
+        const socket = net.createConnection({host: this.trgParsed.hostname, port: this.trgParsed.port, localAddress: this.localAddress});
         socket.once('connect', this.onTrgSocketConnect);
 
         this.onTrgSocket(socket);
